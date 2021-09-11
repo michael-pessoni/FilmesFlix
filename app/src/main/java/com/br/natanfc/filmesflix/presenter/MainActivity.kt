@@ -1,11 +1,13 @@
-package com.br.natanfc.filmesflix
+package com.br.natanfc.filmesflix.presenter
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.br.natanfc.filmesflix.model.Movie
-import com.br.natanfc.filmesflix.viewmodel.MovieListViewModel
+import com.br.natanfc.filmesflix.R
+import com.br.natanfc.filmesflix.domain.Movie
+import com.br.natanfc.filmesflix.framework.viewmodel.MovieListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -19,11 +21,15 @@ class MainActivity : AppCompatActivity() {
         movieListViewModel = ViewModelProvider.NewInstanceFactory().create(MovieListViewModel::class.java)
         movieListViewModel.init()
         initObserver()
+        loadVisibility(true)
     }
 
     private fun initObserver() {
         movieListViewModel.movieList.observe(this, Observer { list ->
-            populateList(list)
+            if (list.isNotEmpty()) {
+                loadVisibility(false)
+                populateList(list)
+            }
         })
     }
 
@@ -33,4 +39,9 @@ class MainActivity : AppCompatActivity() {
             adapter = MoviesAdapter(list)
         }
     }
+
+    private fun loadVisibility(isLoading: Boolean) {
+        progressbar.visibility = if (isLoading) View.VISIBLE else View.GONE
+    }
+
 }
